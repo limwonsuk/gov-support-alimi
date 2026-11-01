@@ -1,0 +1,132 @@
+{
+  "_설명": "수집할 기관 목록. '전국'은 지역과 상관없이 항상 수집하고, '지역'은 config.json 의 내_지역에 해당하는 곳만 수집합니다. 추가·수정 방법은 설치설명서.md 의 '기관 추가하기'를 보세요.",
+
+  "전국": [
+    {
+      "name": "기업마당",
+      "url": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/list.do?cpage={page}",
+      "pages": 4
+    },
+    {
+      "name": "K-Startup",
+      "url": "https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do",
+      "view_url": "https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do?schM=view&pbancSn={id}"
+    },
+    {
+      "name": "중소벤처기업부",
+      "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310",
+      "view_url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx={0}&bcIdx={1}&parentSeq={3}"
+    },
+    {
+      "name": "창업진흥원",
+      "url": "https://www.kised.or.kr/menu.es?mid=a10302000000"
+    },
+    {
+      "name": "중소기업기술정보진흥원",
+      "url": "https://www.smtech.go.kr/front/ifg/no/notice02_list.do"
+    },
+    {
+      "name": "정보통신산업진흥원",
+      "url": "https://www.nipa.kr/home/2-2"
+    },
+    {
+      "name": "한국산업기술진흥원",
+      "url": "https://www.kiat.or.kr/front/board/boardContentsListAjax.do?board_id=90",
+      "link_url": "https://www.kiat.or.kr/front/board/boardContentsListPage.do?board_id=90",
+      "view_url": "https://www.kiat.or.kr/front/board/boardContentsView.do?board_id=90&contents_id={0}"
+    },
+    {
+      "name": "스마트공장 사업관리시스템",
+      "type": "json",
+      "url": "https://www.smart-factory.kr/usr/bg/ba/ma/bsnsPbanc/selectBsnsPbancPage.do",
+      "headers": {"Content-Type": "application/json"},
+      "body": {"key": "list", "rcptStts": "ING", "ordrSe": "REG", "currentPage": "{page}"},
+      "pages": 5,
+      "json": {"list": "pbancList", "title": "pbancNm", "posted": "pbancYmd", "deadline": "ddlnOrdr"},
+      "link_url": "https://www.smart-factory.kr/",
+      "_메모": "접수 중인 사업공고만 가져옵니다. 공고별 주소가 없는 사이트라, 누르면 제목이 복사되고 첫 화면(공고소식)이 열립니다."
+    },
+    {
+      "name": "한국콘텐츠진흥원",
+      "url": "https://www.kocca.kr/kocca/pims/list.do?menuNo=204104",
+      "enabled": false,
+      "_메모": "콘텐츠 업종이면 enabled 를 true 로 바꾸세요."
+    }
+  ],
+
+  "지역": {
+    "서울": [
+      {"name": "서울테크노파크", "url": "https://www.seoultp.or.kr/user/nd19746.do",
+       "view_url": "https://www.seoultp.or.kr/user/nd19746.do?View&boardNo={2}"},
+      {"name": "서울경제진흥원", "url": "https://www.sba.seoul.kr/Pages/BusinessApply/Posting.aspx"}
+    ],
+    "부산": [
+      {"name": "부산테크노파크", "url": "https://www.btp.or.kr/kor/CMS/Board/Board.do?mCode=MN013"},
+      {"name": "부산경제진흥원", "url": "https://www.bepa.kr/kor/view.do?no=1502"}
+    ],
+    "대구": [
+      {"name": "대구테크노파크", "url": "https://www.ttp.org/bbs/BoardControll.do?bbsId=BBSMSTR_000000000003",
+       "view_url": "https://www.ttp.org/bbs/BoardControllView.do?bbsId={1}&nttId={0}"},
+      {"name": "대구디지털혁신진흥원", "url": "https://www.dip.or.kr/home/notice/businessbbs/boardList.ubs?fboardcd=business",
+       "view_url": "https://www.dip.or.kr/home/notice/businessbbs/boardRead.ubs?fboardcd=business&fboardnum={1}&sfpage=1"}
+    ],
+    "인천": [
+      {"name": "인천테크노파크", "url": "https://www.itp.or.kr/intro.asp?tmid=13",
+       "view_url": "https://www.itp.or.kr/intro.asp?tmid=13&seq={0}"}
+    ],
+    "광주": [
+      {"name": "광주테크노파크", "url": "https://www.gjtp.or.kr/home/business.cs"}
+    ],
+    "대전": [
+      {"name": "대전테크노파크", "url": "https://www.djtp.or.kr/menu.es?mid=a20101000000"}
+    ],
+    "울산": [
+      {"name": "울산테크노파크", "url": "http://platform.utp.or.kr/",
+       "view_url": "http://platform.utp.or.kr/com/biz_gonggo_all.php?cmd=search&searchGonggo={0}&searchState={1}&searchGovNm={2}"},
+      {"name": "울산경제일자리진흥원", "url": "https://www.uepa.or.kr/sub/?mcode=0403010000"}
+    ],
+    "세종": [
+      {"name": "세종테크노파크", "url": "https://www.sjtp.or.kr/bbs/board.php?bo_table=business01"}
+    ],
+    "경기": [
+      {"name": "경기테크노파크", "url": "https://pms.gtp.or.kr/web/business/webBusinessList.do",
+       "view_url": "https://pms.gtp.or.kr/web/business/webBusinessView.do?b_idx={0}"},
+      {"name": "경기도경제과학진흥원", "url": "https://www.egbiz.or.kr/sp/supportPrjAreaList.do",
+       "view_url": "https://www.egbiz.or.kr/sp/supportPrjDtl.do?listUrl=supportPrjAreaList&bizCyclId={0}"}
+    ],
+    "강원": [
+      {"name": "강원테크노파크", "url": "https://www.gwtp.or.kr/gwtp/bbsNew_list.php?code=sub01b&keyvalue=sub01"}
+    ],
+    "충북": [
+      {"name": "충북테크노파크", "url": "https://www.cbtp.or.kr/index.php?control=bbs&board_id=saup_notice&lm_uid=387", "legacy_tls": true}
+    ],
+    "충남": [
+      {"name": "충남테크노파크", "url": "https://www.ctp.or.kr/business/data.do"}
+    ],
+    "전북": [
+      {"name": "전북테크노파크", "url": "https://www.jbtp.or.kr/index.jbtp?menuCd=DOM_000000102001000000"}
+    ],
+    "전남": [
+      {"name": "전남테크노파크", "url": "https://www.jntp.or.kr/base/apiAnnouncement/List?menuLevel=2&menuNo=45"}
+    ],
+    "경북": [
+      {"name": "경북테크노파크", "url": "https://www.gbtp.or.kr/user/board.do?bbsId=BBSMSTR_000000000021",
+       "view_url": "https://www.gbtp.or.kr/user/boardDetail.do?bbsId=BBSMSTR_000000000021&nttNo={0}"}
+    ],
+    "경남": [
+      {"name": "경남테크노파크", "url": "https://www.gntp.or.kr/biz/apply",
+       "view_url": "https://www.gntp.or.kr{2}"}
+    ],
+    "제주": [
+      {
+        "name": "제주테크노파크",
+        "type": "json",
+        "url": "https://www.jejutp.or.kr/main/business",
+        "headers": {"Content-Type": "application/json"},
+        "json": {"list": "content", "title": "annoName", "posted": "createdDate", "deadline": "receiptEDate",
+                 "link": "https://www.jejutp.or.kr/board/business/detail/{annoId}"},
+        "link_url": "https://www.jejutp.or.kr/board/business"
+      }
+    ]
+  }
+}

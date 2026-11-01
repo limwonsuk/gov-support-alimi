@@ -1,0 +1,7 @@
+# 개인 설정(지역·텔레그램 봇 토큰)과 모은 공고는 올리지 않는다
+config.json
+data/
+
+__pycache__/
+*.pyc
+.claude/

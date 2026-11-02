@@ -48,7 +48,11 @@ def score(notice, config):
     my = config.get("내_지역", [])
     reasons = []
 
-    if notice["scope"] == "지역":
+    if notice["scope"] == "지역" and notice.get("region") not in (None, *my):
+        # 예전에 골랐다가 뺀 지역의 기관 공고 (이미 모아 둔 것)
+        s = 10
+        reasons.append(f"내 지역 아님({notice['region']})")
+    elif notice["scope"] == "지역":
         s = 100
         reasons.append(f"{notice['agency']} 공고 (전건 알림)")
     else:

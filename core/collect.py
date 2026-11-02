@@ -77,7 +77,7 @@ def run(con, agencies, config):
         found += len(items)
         for it in items:
             nid = db.notice_id(a["name"], it["title"])
-            row = {"agency": a["name"], "scope": a["scope"], "title": it["title"]}
+            row = {"agency": a["name"], "scope": a["scope"], "region": a["region"], "title": it["title"]}
             s, why = score.score(row, config)
             exists = con.execute("SELECT 1 FROM notices WHERE id=?", (nid,)).fetchone()
             if exists:
@@ -101,7 +101,7 @@ def run(con, agencies, config):
 
 def rescore(con, config):
     """설정(지역·키워드)을 바꾼 뒤 저장된 공고 점수를 다시 계산"""
-    rows = con.execute("SELECT id, agency, scope, title FROM notices").fetchall()
+    rows = con.execute("SELECT id, agency, scope, region, title FROM notices").fetchall()
     for r in rows:
         s, why = score.score(dict(r), config)
         con.execute("UPDATE notices SET score=?, reasons=? WHERE id=?", (s, why, r["id"]))

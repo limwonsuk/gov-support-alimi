@@ -6,6 +6,15 @@ on:
   schedule:
     - cron: "0 23 * * *"   # 매일 08:00 (한국 시간) — GitHub 사정으로 몇십 분 늦을 수 있음
   workflow_dispatch: {}    # Actions 화면의 'Run workflow' 버튼으로 지금 바로 실행
+  push:                    # 설정·기관 목록·프로그램을 고쳐 커밋하면 바로 다시 수집해서 웹에 반영
+    branches: [main]
+    paths:
+      - config.example.json
+      - agencies.json
+      - alimi.py
+      - core/**
+      - certs/**
+      - .github/workflows/collect.yml
 
 permissions:
   contents: write          # 수집 데이터(data 브랜치) 저장
@@ -49,6 +58,8 @@ jobs:
           # 텔레그램 요약에 넣을 웹 대시보드 주소
           export ALIMI_DASHBOARD_URL="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
           python alimi.py run
+          # 설정(지역·점수)이 바뀌었을 수 있으니 예전 공고 점수도 다시 계산
+          python alimi.py rescore
 
       - name: 수집 데이터 저장 (data 브랜치)
         env:

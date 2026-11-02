@@ -9,6 +9,8 @@
 
 파이썬 표준 라이브러리만 사용합니다 (인증서 확인용 `truststore` 제외). 데이터는 내 컴퓨터(`data/alimi.db`)에만 저장됩니다.
 
+**웹 대시보드: <https://limwonsuk.github.io/gov-support-alimi/>** — GitHub Actions 가 매일 08:00(KST) 수집해 게시합니다.
+
 ## 빠른 시작
 
 1. [Python](https://www.python.org/downloads/) 설치 ("Add python.exe to PATH" 체크)

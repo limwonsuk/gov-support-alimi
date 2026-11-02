@@ -231,8 +231,11 @@ function renderRunInfo(run, collecting) {
   $('runinfo').innerHTML = html;
 }
 
+// 웹 게시판(GitHub Pages)으로 내보낸 경우: 서버 없이 data.json 을 읽고, 수집은 GitHub Actions 에서 한다
+const STATIC = window.ALIMI_STATIC || null;
+
 async function load() {
-  const res = await fetch('/api/data');
+  const res = await fetch(STATIC ? 'data.json' : '/api/data', { cache: 'no-store' });
   DATA = await res.json();
   const s = DATA.stats;
   $('region').textContent = DATA.regions.join(' · ');
@@ -249,14 +252,24 @@ async function load() {
   sel.innerHTML = '<option value="">기관 전체</option>' + names.map(n => `<option>${esc(n)}</option>`).join('');
   sel.value = cur;
 
-  $('collect').disabled = DATA.collecting;
-  $('collect').textContent = DATA.collecting ? '수집 중…' : '지금 수집';
+  if (STATIC) {
+    $('collect').hidden = !STATIC.actions;
+    $('collect').title = 'GitHub 에서 수집을 실행합니다 (2~3분 뒤 새로고침)';
+  } else {
+    $('collect').disabled = DATA.collecting;
+    $('collect').textContent = DATA.collecting ? '수집 중…' : '지금 수집';
+  }
   renderRunInfo(DATA.last_run, DATA.collecting);
   render();
   if (DATA.collecting) setTimeout(load, 4000);
 }
 
 $('collect').onclick = async () => {
+  if (STATIC) {
+    // 'Run workflow' 버튼이 있는 GitHub 화면을 연다
+    window.open(STATIC.actions, '_blank', 'noopener');
+    return;
+  }
   $('collect').disabled = true;
   await fetch('/api/collect', { method: 'POST' });
   setTimeout(load, 800);

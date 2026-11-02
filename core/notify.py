@@ -7,6 +7,7 @@
 import html
 import json
 import logging
+import os
 import time
 import urllib.parse
 import urllib.request
@@ -83,7 +84,8 @@ def _line(r):
 def build_messages(rows, config, today=None):
     today = today or datetime.now().strftime("%Y-%m-%d")
     limit = config.get("요약_기준_건수", 20)
-    port = config.get("대시보드_포트", 8765)
+    # GitHub Actions 에서 돌 때는 웹 게시판 주소를 쓴다
+    board = os.environ.get("ALIMI_DASHBOARD_URL") or f"http://localhost:{config.get('대시보드_포트', 8765)}"
     if not rows:
         return [f"📭 {today} 정부 지원사업 알리미\n오늘은 없었습니다."]
     if len(rows) <= limit:
@@ -100,7 +102,7 @@ def build_messages(rows, config, today=None):
     for r in top:
         dl = f" (~{r['deadline'][5:]})" if r["deadline"] else ""
         parts.append(f"• [{r['score']}] {html.escape(r['title'][:60])}{dl}")
-    parts += ["", f"전체 목록은 대시보드에서: http://localhost:{port}"]
+    parts += ["", f"전체 목록은 대시보드에서: {board}"]
     return ["\n".join(parts)]
 
 

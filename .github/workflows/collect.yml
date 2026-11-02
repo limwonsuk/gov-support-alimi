@@ -1,0 +1,88 @@
+# 매일 아침 GitHub 서버에서 공고를 수집하고, 대시보드를 웹 페이지(GitHub Pages)로 게시한다.
+# PC 가 꺼져 있어도 돌아간다. 설정은 저장소 Secret 'ALIMI_CONFIG' (config.json 내용)에서 읽는다.
+name: 공고 수집
+
+on:
+  schedule:
+    - cron: "0 23 * * *"   # 매일 08:00 (한국 시간) — GitHub 사정으로 몇십 분 늦을 수 있음
+  workflow_dispatch: {}    # Actions 화면의 'Run workflow' 버튼으로 지금 바로 실행
+
+permissions:
+  contents: write          # 수집 데이터(data 브랜치) 저장
+  pages: write
+  id-token: write
+
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
+env:
+  TZ: Asia/Seoul           # '오늘' 날짜를 한국 기준으로
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 부품 설치
+        run: pip install -r requirements.txt
+
+      - name: 설정 불러오기
+        env:
+          ALIMI_CONFIG: ${{ secrets.ALIMI_CONFIG }}
+        run: |
+          if [ -n "$ALIMI_CONFIG" ]; then printf '%s' "$ALIMI_CONFIG" > config.json; else cp config.example.json config.json; fi
+          python -c "import json; c=json.load(open('config.json', encoding='utf-8')); print('내 지역:', c['내_지역'])"
+
+      - name: 지난 수집 데이터 불러오기
+        run: |
+          mkdir -p data
+          if git fetch --depth=1 origin data; then git show FETCH_HEAD:alimi.db > data/alimi.db; echo "이어서 수집"; else echo "첫 수집"; fi
+
+      - name: 수집 + 텔레그램 알림
+        run: |
+          # 텔레그램 요약에 넣을 웹 대시보드 주소
+          export ALIMI_DASHBOARD_URL="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
+          python alimi.py run
+
+      - name: 수집 데이터 저장 (data 브랜치)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          work=$(mktemp -d)
+          cp data/alimi.db "$work/"
+          cd "$work"
+          git init -q -b data
+          git add alimi.db
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -qm "수집 데이터 $(date +%F)"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" data
+
+      - name: 대시보드 내보내기
+        run: python alimi.py export site
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dashboard
+          path: site
+
+      - uses: actions/upload-pages-artifact@v3
+        if: vars.PAGES == 'on'
+        with:
+          path: site
+
+  deploy:
+    needs: collect
+    if: vars.PAGES == 'on'   # GitHub Pages 를 켠 뒤 저장소 변수 PAGES=on 으로 설정
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

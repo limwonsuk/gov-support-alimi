@@ -9,9 +9,11 @@
     python alimi.py telegram-test  텔레그램 테스트 메시지 보내기
     python alimi.py schedule 08:00 매일 아침 자동 실행 등록 (Windows 작업 스케줄러)
     python alimi.py unschedule     자동 실행 해제
+    python alimi.py export site    대시보드를 웹 게시용 파일로 내보내기 (GitHub Pages)
 """
 import json
 import logging
+import os
 import subprocess
 import sys
 import threading
@@ -154,6 +156,20 @@ def cmd_schedule(at):
         print("등록 실패:", r.stderr.strip())
 
 
+def cmd_export(out_dir):
+    """대시보드를 서버 없이 열리는 웹 페이지(index.html + data.json)로 내보낸다 — GitHub Pages 게시용"""
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    data = web.DashboardApp(open_db, load_config, None).dashboard_data()
+    (out / "data.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    repo = os.environ.get("GITHUB_REPOSITORY")
+    static = {"actions": f"https://github.com/{repo}/actions/workflows/collect.yml" if repo else None}
+    page = web.PAGE.read_text(encoding="utf-8").replace(
+        "</head>", f"<script>window.ALIMI_STATIC = {json.dumps(static)};</script>\n</head>", 1)
+    (out / "index.html").write_text(page, encoding="utf-8")
+    print(f"내보냈습니다: {out.resolve()} (공고 {len(data['notices'])}건)")
+
+
 def cmd_setup():
     config = load_config()
     print("=" * 56)
@@ -206,6 +222,8 @@ def main():
         cmd_unschedule()
     elif cmd == "setup":
         cmd_setup()
+    elif cmd == "export":
+        cmd_export(args[1] if len(args) > 1 else "site")
     else:
         print(__doc__)
 

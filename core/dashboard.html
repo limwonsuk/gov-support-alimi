@@ -159,7 +159,7 @@ function render() {
     (!sc || (sc === 'pass' ? n.score >= pass : n.score < pass)) &&
     (!q || n.title.toLowerCase().includes(q)) &&
     (!onlyOpen || !n.deadline || n.deadline >= today) &&
-    (!onlyNew || n.first_seen === today)
+    (!onlyNew || n.is_new)
   );
 
   $('count').textContent = `${list.length.toLocaleString()}건`;
@@ -177,7 +177,7 @@ function render() {
     const find = n.direct !== 0 ? '' : '<span class="find" title="이 사이트는 공고별 주소가 없어, 누르면 제목을 복사하고 사이트를 엽니다">제목 복사 후 열기</span>';
     return `<tr class="row" data-id="${esc(n.id)}">
       <td class="score ${n.score < pass ? 'low' : ''}">${n.score}</td>
-      <td class="title"><b>${esc(n.title)}</b>${n.first_seen === today ? '<span class="new">NEW</span>' : ''}${find}<small>${esc(n.reasons)}</small></td>
+      <td class="title"><b>${esc(n.title)}</b>${n.is_new ? '<span class="new">NEW</span>' : ''}${find}<small>${esc(n.reasons)}</small></td>
       <td class="agency">${esc(n.agency)}</td>
       <td class="date posted">${esc(n.posted || '')}</td>
       <td class="${dcls}">${esc(n.deadline || '–')}</td>

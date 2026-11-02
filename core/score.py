@@ -9,6 +9,7 @@
 점수는 0~100 사이로 자르고, 합격_점수(기본 50) 이상만 알림/합격으로 칩니다.
 """
 import re
+from datetime import date, timedelta
 
 REGION_WORDS = {
     "서울": ["서울"],
@@ -75,6 +76,21 @@ def score(notice, config):
 
     s = max(0, min(100, s))
     return s, " · ".join(reasons)
+
+
+def is_new(notice, today, days=3):
+    """'오늘 신규' = 오늘 처음 수집했고, 게시일도 최근(기본 3일 이내)인 공고.
+
+    예전에 올라온 공고가 오늘 처음 보이는 경우(접수 중 목록에 새로 들어옴, 제목 수정 등)는 신규가 아니다.
+    3일 여유는 어제 오후·주말에 올라온 공고를 아침에 처음 수집하는 경우를 위한 것.
+    """
+    if notice["first_seen"] != today:
+        return False
+    posted = notice["posted"]
+    if not posted:
+        return True
+    cutoff = (date.fromisoformat(today) - timedelta(days=days)).isoformat()
+    return posted >= cutoff
 
 
 def norm_title(title):

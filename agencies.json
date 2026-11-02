@@ -42,9 +42,10 @@
       "headers": {"Content-Type": "application/json"},
       "body": {"key": "list", "rcptStts": "ING", "ordrSe": "REG", "currentPage": "{page}"},
       "pages": 5,
-      "json": {"list": "pbancList", "title": "pbancNm", "posted": "pbancYmd", "deadline": "ddlnOrdr"},
+      "json": {"list": "pbancList", "title": "pbancNm", "posted": "pbancYmd", "deadline": "ddlnOrdr",
+               "link": "https://www.smart-factory.kr/usr/bg/ba/ma/bsnsPbancDtl?pbancId={pbancId}&pbancSn={pbancSn}"},
       "link_url": "https://www.smart-factory.kr/",
-      "_메모": "접수 중인 사업공고만 가져옵니다. 공고별 주소가 없는 사이트라, 누르면 제목이 복사되고 첫 화면(공고소식)이 열립니다."
+      "_메모": "접수 중인 사업공고만 가져옵니다. 상세 화면은 사이트의 '링크복사' 버튼과 같은 주소로 엽니다."
     },
     {
       "name": "한국콘텐츠진흥원",

@@ -13,7 +13,7 @@ import urllib.request
 from collections import Counter
 from datetime import datetime
 
-from . import fetch
+from . import fetch, score
 
 log = logging.getLogger("alimi")
 
@@ -57,8 +57,11 @@ def pick_alerts(con, new_ids, config):
         f"SELECT * FROM notices WHERE id IN ({marks}) AND score >= ? AND notified_at IS NULL"
         " AND (deadline IS NULL OR deadline >= ?)"  # 이미 마감된 공고는 알리지 않는다
         " ORDER BY score DESC, scope DESC, COALESCE(deadline, '9999') ASC", (*new_ids, passing, today)).fetchall()
+    days = config.get("신규_기준_일수", 3)
     picked, norms = [], set()
     for r in rows:
+        if not score.is_new(r, today, days):  # 예전 공고가 오늘 처음 보인 것(목록 재등장·제목 수정)은 알리지 않는다
+            continue
         if r["norm"] in norms:
             continue
         older = con.execute(

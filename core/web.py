@@ -6,6 +6,8 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from . import score
+
 log = logging.getLogger("alimi")
 PAGE = Path(__file__).with_name("dashboard.html")
 
@@ -83,6 +85,9 @@ class DashboardApp:
             last = con.execute("SELECT * FROM runs ORDER BY id DESC LIMIT 1").fetchone()
         finally:
             con.close()
+        days = config.get("신규_기준_일수", 3)
+        for r in rows:
+            r["is_new"] = score.is_new(r, today, days)
         return {
             "today": today,
             "regions": config.get("내_지역", []),
@@ -92,7 +97,7 @@ class DashboardApp:
                 "total": len(rows),
                 "passed": sum(1 for r in rows if r["score"] >= passing),
                 "sent": sum(1 for r in rows if r["notified_at"]),
-                "today_new": sum(1 for r in rows if r["first_seen"] == today),
+                "today_new": sum(1 for r in rows if r["is_new"]),
             },
             "last_run": dict(last) if last else None,
             "notices": rows,

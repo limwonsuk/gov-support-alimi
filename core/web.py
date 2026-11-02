@@ -6,6 +6,8 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from . import score
+
 log = logging.getLogger("alimi")
 PAGE = Path(__file__).with_name("dashboard.html")
 
@@ -83,10 +85,9 @@ class DashboardApp:
             last = con.execute("SELECT * FROM runs ORDER BY id DESC LIMIT 1").fetchone()
         finally:
             con.close()
-        # 대시보드의 '오늘 신규'·NEW = 게시일이 오늘인 공고
-        # (텔레그램 알림은 어제 오후·주말 공고도 놓치지 않도록 score.is_new 의 며칠 여유 기준을 따로 쓴다)
+        days = config.get("신규_기준_일수", 3)
         for r in rows:
-            r["is_new"] = r["posted"] == today
+            r["is_new"] = score.is_new(r, today, days)
         return {
             "today": today,
             "regions": config.get("내_지역", []),

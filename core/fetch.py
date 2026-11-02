@@ -2,7 +2,9 @@
 import re
 import ssl
 import time
+import urllib.error
 import urllib.request
+from pathlib import Path
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 
@@ -27,6 +29,20 @@ try:
     _LEGACY_CTX.set_ciphers("DEFAULT:@SECLEVEL=1")
 except ssl.SSLError:
     pass
+
+# Linux(GitHub Actions)에서는 빠진 중간 인증서를 자동으로 받아 오지 않는다.
+# certs/ 폴더의 중간 인증서를 더해 다시 검증한다 — 최상위(루트) 인증서까지 이어져야 통과하므로 검증은 그대로다.
+_CERTS_DIR = Path(__file__).resolve().parent.parent / "certs"
+
+
+def _intermediate_context(legacy):
+    ctx = ssl.create_default_context()
+    for pem in sorted(_CERTS_DIR.glob("*.pem")):
+        ctx.load_verify_locations(cafile=str(pem))
+    if legacy:
+        ctx.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+        ctx.set_ciphers("DEFAULT:@SECLEVEL=1")
+    return ctx
 
 
 def _decode(raw, content_type):
@@ -59,8 +75,14 @@ def get(url, timeout=20, retries=1, legacy_tls=False, headers=None, data=None):
                 **(headers or {}),
             })
             ctx = _LEGACY_CTX if legacy_tls else _CTX
-            with urllib.request.urlopen(req, timeout=timeout, context=ctx) as res:
-                return _decode(res.read(), res.headers.get("Content-Type"))
+            try:
+                with urllib.request.urlopen(req, timeout=timeout, context=ctx) as res:
+                    return _decode(res.read(), res.headers.get("Content-Type"))
+            except urllib.error.URLError as e:
+                if not isinstance(e.reason, ssl.SSLCertVerificationError):
+                    raise
+                with urllib.request.urlopen(req, timeout=timeout, context=_intermediate_context(legacy_tls)) as res:
+                    return _decode(res.read(), res.headers.get("Content-Type"))
         except Exception as e:  # noqa: BLE001 - 어떤 오류든 재시도 후 보고
             last = e
             time.sleep(1.5)

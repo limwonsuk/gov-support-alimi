@@ -253,8 +253,7 @@ async function load() {
   sel.value = cur;
 
   if (STATIC) {
-    $('collect').hidden = !STATIC.actions;
-    $('collect').title = 'GitHub 에서 수집을 실행합니다 (2~3분 뒤 새로고침)';
+    $('collect').title = '최신 수집 결과를 다시 불러옵니다';
   } else {
     $('collect').disabled = DATA.collecting;
     $('collect').textContent = DATA.collecting ? '수집 중…' : '지금 수집';
@@ -266,8 +265,8 @@ async function load() {
 
 $('collect').onclick = async () => {
   if (STATIC) {
-    // 'Run workflow' 버튼이 있는 GitHub 화면을 연다
-    window.open(STATIC.actions, '_blank', 'noopener');
+    // 웹 게시판에서는 최신 data.json 을 다시 읽도록 새로고침한다
+    location.reload();
     return;
   }
   $('collect').disabled = true;

@@ -167,11 +167,18 @@ def _title_of(a):
 
 def _best_link(row):
     best = None
-    for a in row.iter({"a"}):
+    # <a> 가 없고 <span onclick="goView(…)"> 처럼 다른 요소에 클릭이 걸린 게시판도 있다
+    links = [n for n in row.iter() if n.tag == "a" or n.tag in ("span", "strong", "p", "b") and "onclick" in n.attrs]
+    for a in links:
+        if a.tag != "a" and any(n is not a and n.tag == "a" for n in a.iter()):
+            continue
         t = _clean_title(a.attrs.get("title") or "")
         txt = _title_of(a)
         cand = txt if len(txt) >= len(t) else t
         if len(cand) < 6 or JUNK_TITLES.match(cand) or find_dates(cand) and len(cand) < 25:
+            continue
+        # '공고문.pdf 다운로드' 같은 첨부파일 링크는 제목이 길어도 글 링크로 쓰지 않는다
+        if re.search(r"\.\w{2,4}\s*(다운로드|내려받기)?$|다운로드$", cand):
             continue
         if best is None or len(cand) > len(best[0]):
             best = (cand, a)
@@ -265,7 +272,7 @@ def extract_items(html, base_url, view_url=None, max_dates=6):
     for node in root.iter(ROW_TAGS | {"div"}):
         if node.tag == "div":
             cls = node.attrs.get("class", "")
-            if not re.search(r"(^|[\s_-])(item|card|row|box|list_con)([\s_-]|$)", cls):
+            if not re.search(r"(^|[\s_-])(item|card|row|box|list_con)([\s_-]|$)|[a-z](Item|Card|Row|Box)(\s|$)", cls):
                 continue
         rows.append(node)
 
@@ -290,7 +297,8 @@ def extract_items(html, base_url, view_url=None, max_dates=6):
         # 제목 속 날짜(예: '~26.12.31')가 게시일로 잡히지 않게 제목을 빼고 날짜를 찾는다
         posted, deadline = pick_dates(txt.replace(a.text(), " ", 1))
         url = _resolve_href(a, row, base_url, view_url)
-        if title in seen:
+        # 머리글의 '인기 검색어' 순위처럼 검색 결과로 가는 링크는 공고가 아니다
+        if title in seen or re.search(r"search\.\w+\?", url):
             continue
         seen.add(title)
         items.append({"title": title, "url": url, "posted": posted, "deadline": deadline, "row_text": txt})

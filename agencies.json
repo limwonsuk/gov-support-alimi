@@ -48,6 +48,59 @@
       "_메모": "접수 중인 사업공고만 가져옵니다. 상세 화면은 사이트의 '링크복사' 버튼과 같은 주소로 엽니다."
     },
     {
+      "name": "범부처통합연구지원시스템",
+      "url": "https://www.iris.go.kr/contents/retrieveBsnsAncmBtinSituListView.do"
+    },
+    {
+      "name": "한국산업기술기획평가원",
+      "url": "https://srome.keit.re.kr/srome/biz/perform/opnnPrpsl/retrieveTaskAnncmListView.do?prgmId=XPG201040000"
+    },
+    {
+      "name": "산업통상부",
+      "url": "https://www.motie.go.kr/kor/article/ATCLc01b2801b"
+    },
+    {
+      "name": "정보통신기획평가원",
+      "type": "json",
+      "url": "https://www.iitp.kr/link-svc/api/iris/list.do",
+      "headers": {"Content-Type": "application/json"},
+      "body": {},
+      "json": {"list": "list", "title": "title", "posted": "receipt_begin_date", "deadline": "receipt_end_date",
+               "link": "https://www.iitp.kr/web/lay1/program/S1T44C51/iris/view.do?id={id}"},
+      "link_url": "https://www.iitp.kr/web/lay1/program/S1T44C51/iris/list.do",
+      "_메모": "게시일 대신 접수 시작일을 씁니다."
+    },
+    {
+      "name": "한국산업단지공단",
+      "url": "https://www.kicox.or.kr/boardList/1016",
+      "view_url": "https://www.kicox.or.kr/boardDetail/1016?bbsSeq={0}",
+      "legacy_tls": true
+    },
+    {
+      "name": "한국로봇산업진흥원",
+      "url": "https://www.kiria.org/portal/info/portalInfoBusinessList.do",
+      "view_url": "https://www.kiria.org/portal/info/portalInfoBusinessWrite.do?mode=update&ibusCode={0}"
+    },
+    {
+      "name": "한국표준협회",
+      "url": "https://ksa.or.kr/bbs/ksa_kr/190/artclList.do"
+    },
+    {
+      "name": "중소기업중앙회",
+      "url": "https://www.kbiz.or.kr/ko/contents/bbs/list.do?mnSeq=211",
+      "view_url": "https://www.kbiz.or.kr/ko/contents/bbs/view.do?mnSeq=211&seq={0}",
+      "_메모": "정보마당 > 입찰·사업공고 게시판"
+    },
+    {
+      "name": "대한상공회의소",
+      "url": "https://www.korcham.net/nCham/Service/Kcci/appl/KcciNoticeList.asp",
+      "view_url": "https://www.korcham.net/nCham/Service/Kcci/appl/KcciNoticeDetail.asp?nKey={0}"
+    },
+    {
+      "name": "한국조선해양기자재연구원",
+      "url": "https://www.komeri.re.kr/bbs/board.php?bo_table=business"
+    },
+    {
       "name": "한국콘텐츠진흥원",
       "url": "https://www.kocca.kr/kocca/pims/list.do?menuNo=204104",
       "enabled": false,
@@ -63,7 +116,8 @@
     ],
     "부산": [
       {"name": "부산테크노파크", "url": "https://www.btp.or.kr/kor/CMS/Board/Board.do?mCode=MN013"},
-      {"name": "부산경제진흥원", "url": "https://www.bepa.kr/kor/view.do?no=1502"}
+      {"name": "부산경제진흥원", "url": "https://www.bepa.kr/kor/view.do?no=1502"},
+      {"name": "부산정보산업진흥원", "url": "https://www.busanit.or.kr/board/business/list"}
     ],
     "대구": [
       {"name": "대구테크노파크", "url": "https://www.ttp.org/bbs/BoardControll.do?bbsId=BBSMSTR_000000000003",
